@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AirLink India - Open Access</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap');
+
+        :root {
+            --primary: #3b82f6; 
+            --primary-light: #eff6ff;
+            --success: #10b981; 
+            --satisfactory: #84cc16; 
+            --moderate: #eab308; 
+            --poor: #f97316; 
+            --very-poor: #ef4444; 
+            --severe: #991b1b; 
+            --dark: #1e293b;
+            --gray: #64748b;
+            --light: #f8fafc;
+            --white: rgba(255, 255, 255, 0.85);
+            --shadow: 0 20px 40px rgba(0,0,0,0.1);
+            --radius: 20px;
+            --glow-color: #3b82f6;
+        }
+
+        /* --- Animated Background --- */
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            color: var(--dark);
+            background: linear-gradient(-45deg, #a1c4fd, #c2e9fb, #e0c3fc, #8ec5fc);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* --- Glassmorphism Layout --- */
+        .app-container {
+            width: 100%;
+            max-width: 480px; 
+            background: var(--white);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        header {
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.5);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            backdrop-filter: blur(10px);
+        }
+
+        .brand { font-size: 1.4rem; font-weight: 800; color: var(--primary); display: flex; align-items: center; gap: 8px; text-shadow: 0 2px 4px rgba(0,0,0,0.05);}
+        .settings-btn { background: none; border: none; font-size: 1.3rem; color: var(--gray); cursor: pointer; transition: transform 0.2s; }
+        .settings-btn:hover { transform: rotate(45deg); }
+
+        .content { padding: 20px; flex-grow: 1; overflow-y: auto; scrollbar-width: none; }
+        .content::-webkit-scrollbar { display: none; }
+
+        /* --- Sections with Hover Reveal --- */
+        .card {
+            background: rgba(255, 255, 255, 0.7);
+            border: 1px solid rgba(255,255,255,0.8);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 16px;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+        }
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+            background: rgba(255, 255, 255, 0.9);
+        }
+
+        .section-title {
+            font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1.5px;
+            color: var(--primary); margin-bottom: 15px; font-weight: 800;
+        }
+
+        input[type="text"], input[type="date"] {
+            width: 100%; padding: 14px; border: 2px solid rgba(200,200,200,0.3); border-radius: 12px; font-size: 1rem; box-sizing: border-box; outline: none; transition: all 0.3s;
+            font-family: inherit; background: rgba(255,255,255,0.8);
+        }
+        input[type="text"]:focus, input[type="date"]:focus { border-color: var(--primary); background: #fff; box-shadow: 0 0 0 3px var(--primary-light); }
+
+        /* --- Toggles --- */
+        .toggle-row { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 5px; scrollbar-width: none; }
+        .toggle-row::-webkit-scrollbar { display: none; }
+        .chip {
+            background: rgba(255,255,255,0.6); padding: 10px 18px; border-radius: 20px; font-size: 0.9rem; font-weight: 600; cursor: pointer; white-space: nowrap; user-select: none; border: 2px solid transparent; transition: all 0.2s; color: var(--gray);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        }
+        .chip:hover { background: rgba(255,255,255,0.9); transform: translateY(-1px); }
+        .chip.active { background: var(--primary); color: white; border-color: var(--primary); box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3); }
+
+        /* --- Symptoms --- */
+        .symptom-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+        .symptom-btn {
+            background: rgba(255,255,255,0.5); border: 2px solid transparent; border-radius: 12px; padding: 15px 5px; text-align: center; font-size: 0.8rem; font-weight: 600; cursor: pointer; transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1); display: flex; flex-direction: column; align-items: center; gap: 8px; color: var(--gray);
+        }
+        .symptom-btn i { font-size: 1.5rem; margin-bottom: 4px; }
+        .symptom-btn:hover { background: rgba(255,255,255,0.9); }
+        .symptom-btn.selected { background: white; color: var(--primary); border-color: var(--primary); box-shadow: 0 8px 16px rgba(59, 130, 246, 0.15); transform: scale(1.05); }
+
+        /* --- Action Button with Pulse --- */
+        .analyze-btn {
+            width: 100%; padding: 18px; background: linear-gradient(135deg, var(--primary), #2563eb); color: white; border: none; border-radius: 14px; font-size: 1.1rem; font-weight: 800; cursor: pointer; margin-top: 10px; transition: all 0.3s; display: flex; justify-content: center; align-items: center; gap: 10px;
+            box-shadow: 0 10px 20px rgba(59, 130, 246, 0.3);
+            position: relative; overflow: hidden;
+        }
+        .analyze-btn:hover { transform: translateY(-2px); box-shadow: 0 15px 25px rgba(59, 130, 246, 0.4); }
+        .analyze-btn:active { transform: translateY(1px); }
+        .analyze-btn::after {
+            content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 100%; background: linear-gradient(to right, transparent, rgba(255,255,255,0.3), transparent); transform: skewX(-20deg); animation: shine 3s infinite;
+        }
+        @keyframes shine { 100% { left: 200%; } }
+
+        /* --- Results View --- */
+        #results-view { display: none; animation: slideUp 0.4s cubic-bezier(0.25, 0.8, 0.25, 1); }
+        @keyframes slideUp { from { transform: translateY(40px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        
+        /* Glowing AQI Circle */
+        .aqi-circle-container { display: flex; justify-content: center; margin: 30px 0; position: relative; }
+        .aqi-circle {
+            width: 200px; height: 200px; border-radius: 50%;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            background: white; position: relative; z-index: 2;
+            box-shadow: 0 0 40px var(--glow-color);
+            transition: box-shadow 0.5s ease;
+        }
+        .aqi-circle::before {
+            content: ''; position: absolute; top: -6px; left: -6px; right: -6px; bottom: -6px;
+            border-radius: 50%; background: conic-gradient(var(--glow-color), transparent, var(--glow-color));
+            z-index: -1; animation: spin 3s linear infinite; opacity: 0.5;
+        }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+
+        .aqi-val { font-size: 4.5rem; font-weight: 800; line-height: 1; color: var(--dark); letter-spacing: -2px; }
+        .aqi-label { font-size: 1.2rem; font-weight: 800; margin-top: 5px; color: var(--glow-color); text-transform: uppercase; letter-spacing: 1px; }
+        .aqi-city { font-size: 0.9rem; margin-top: 5px; color: var(--gray); font-weight: 600;}
+
+        /* --- Charts & Text --- */
+        .analysis-text { line-height: 1.7; font-size: 0.95rem; color: #334155; }
+        .highlight-card { border-left: 5px solid var(--glow-color); background: linear-gradient(to right, rgba(255,255,255,0.9), rgba(255,255,255,0.6)); }
+
+        /* --- Modal & Toast --- */
+        .modal { display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); z-index: 100; backdrop-filter: blur(8px); animation: fadeIn 0.2s; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .modal-content { background: var(--white); margin: 20px; padding: 25px; border-radius: 20px; margin-top: 80px; box-shadow: var(--shadow); border: 1px solid rgba(255,255,255,0.8); }
+        .close-modal { float: right; font-size: 1.5rem; cursor: pointer; color: var(--gray); transition: color 0.2s;}
+        .close-modal:hover { color: var(--dark); }
+        .demo-btn { width: 100%; margin-bottom: 10px; padding: 14px; border: 1px solid rgba(0,0,0,0.1); background: rgba(255,255,255,0.5); border-radius: 12px; cursor: pointer; font-weight: 600; transition: all 0.2s; text-align: left; }
+        .demo-btn:hover { background: white; transform: translateX(5px); border-color: var(--primary); }
+
+        .sample-link { text-align: center; margin-top: 20px; font-size: 0.9rem; color: var(--gray); text-decoration: underline; cursor: pointer; transition: color 0.2s; }
+        .sample-link:hover { color: var(--primary); }
+
+        /* Toast Notifications */
+        #toast-container { position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 200; display: flex; flex-direction: column; gap: 10px; pointer-events: none; width: 90%; }
+        .toast { background: var(--dark); color: white; padding: 14px 20px; border-radius: 12px; font-size: 0.9rem; font-weight: 600; box-shadow: 0 10px 25px rgba(0,0,0,0.2); animation: toastUp 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), fadeOut 0.3s 3s forwards; display: flex; align-items: center; gap: 10px; }
+        .toast.error { background: var(--severe); }
+        @keyframes toastUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        @keyframes fadeOut { to { opacity: 0; visibility: hidden; } }
+
+        /* --- Smartwatch & Ultra-Small Screen Adaptations --- */
+        @media (max-width: 400px) {
+            body { padding: 0; background: var(--dark); } /* Save watch battery with darker outer edge */
+            .app-container { border-radius: 0; border: none; min-height: 100vh; box-shadow: none; }
+            header { padding: 12px 15px; }
+            .content { padding: 12px; }
+            .card { padding: 15px; border-radius: 12px; margin-bottom: 12px; }
+            
+            /* Scale down main circle for watch face */
+            .aqi-circle { width: 150px; height: 150px; }
+            .aqi-val { font-size: 3rem; letter-spacing: -1px; }
+            .aqi-label { font-size: 1rem; }
+            
+            /* Make buttons fatter for tiny fingers */
+            .symptom-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+            .symptom-btn { padding: 12px 5px; font-size: 0.85rem; }
+            
+            .analyze-btn { padding: 16px; font-size: 1rem; }
+            
+            /* Scale down text slightly */
+            .section-title { font-size: 0.75rem; margin-bottom: 10px; }
+            .analysis-text { font-size: 0.9rem; }
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    <header>
+        <div class="brand">
+            <span>🌬️</span> AirLink <span style="font-weight: 300; color:var(--gray);">India</span>
+        </div>
+        <button class="settings-btn" onclick="openSettings()">⚙️</button>
+    </header>
+
+    <div class="content" id="input-view">
+        
+        <!-- Profile -->
+        <div class="card">
+            <div class="section-title">1. Health Profile</div>
+            <div class="toggle-row">
+                <div class="chip" onclick="toggleChip(this, 'sens')" data-val="Asthma">Asthma/COPD</div>
+                <div class="chip" onclick="toggleChip(this, 'sens')" data-val="Senior">Senior Citizen</div>
+                <div class="chip" onclick="toggleChip(this, 'sens')" data-val="Children">Children</div>
+                <div class="chip active" onclick="toggleChip(this, 'sens')" data-val="None">None</div>
+            </div>
+        </div>
+
+        <!-- Location & Time -->
+        <div class="card">
+            <div class="section-title">2. Location & Time</div>
+            <input type="text" id="cityInput" placeholder="Enter City (e.g. Delhi, Mumbai)" value="Delhi" style="margin-bottom:15px;">
+            
+            <label style="font-size:0.8rem; color:var(--gray); font-weight:700; margin-bottom: 5px; display:block;">Analyze Specific Date (Optional)</label>
+            <input type="date" id="dateInput">
+            
+            <label style="display:flex; align-items:center; gap:8px; margin-top:15px; font-size:0.85rem; font-weight:600; color:var(--dark); cursor:pointer; background: var(--primary-light); padding: 10px; border-radius: 8px; border: 1px solid var(--primary);">
+                <input type="checkbox" id="calibrateToggle" checked style="accent-color: var(--primary); width: 16px; height: 16px;">
+                Enable India Street-Level Calibration
+            </label>
+        </div>
+
+        <!-- Symptoms -->
+        <div class="card">
+            <div class="section-title">3. Current Symptoms (Optional)</div>
+            <div class="symptom-grid">
+                <div class="symptom-btn" onclick="toggleSymptom(this)"><span>🤕</span>Headache</div>
+                <div class="symptom-btn" onclick="toggleSymptom(this)"><span>😮‍💨</span>Coughing</div>
+                <div class="symptom-btn" onclick="toggleSymptom(this)"><span>🤧</span>Sneezing</div>
+                <div class="symptom-btn" onclick="toggleSymptom(this)"><span>👁️</span>Eye Burn</div>
+                <div class="symptom-btn" onclick="toggleSymptom(this)"><span>👃</span>Runny Nose</div>
+                <div class="symptom-btn" onclick="toggleSymptom(this)"><span>🫁</span>Breathless</div>
+                <div class="symptom-btn" onclick="toggleSymptom(this)"><span>😫</span>Fatigue</div>
+                <div class="symptom-btn" onclick="toggleSymptom(this)"><span>🔥</span>Throat Irrit.</div>
+                <div class="symptom-btn" onclick="toggleSymptom(this)"><span>💔</span>Chest Tight.</div>
+            </div>
+        </div>
+
+        <button class="analyze-btn" onclick="startAnalysis()">
+            Analyze Air Quality <span>➔</span>
+        </button>
+        
+        <div class="sample-link" onclick="openSettings()">
+            Want to test scenarios? Try Demo Mode
+        </div>
+        
+    </div>
+
+    <!-- RESULTS VIEW -->
+    <div class="content" id="results-view">
+        <button onclick="goBack()" style="background:none; border:none; color:var(--gray); font-weight:600; cursor:pointer; margin-bottom:10px; display:flex; align-items:center; gap:5px; transition: color 0.2s;"><span style="font-size:1.2rem;">←</span> Back to Inputs</button>
+        
+        <div class="aqi-circle-container">
+            <div class="aqi-circle" id="aqi-card-bg">
+                <div class="aqi-val" id="res-aqi">--</div>
+                <div class="aqi-label" id="res-status">Loading</div>
+                <div class="aqi-city" id="res-city">--</div>
+            </div>
+        </div>
+
+        <!-- Exercise Recommendation & Best Time Card -->
+        <div class="card highlight-card" id="exercise-card">
+            <div class="section-title" style="color:var(--glow-color);">🏃 Outdoor Exercise (2 Hrs)</div>
+            <div id="res-exercise">
+                Calculating recommendation...
+            </div>
+            <hr style="border:0; border-top:1px solid rgba(0,0,0,0.1); margin:15px 0;">
+            <div class="section-title" style="color:var(--glow-color);">⏱️ Best Time to Go Out (Next 24h)</div>
+            <div id="res-best-time" style="font-size:0.95rem; font-weight: 600; color:var(--dark);">
+                Fetching forecast...
+            </div>
+        </div>
+
+        <!-- Pollutant Breakdown Card -->
+        <div class="card">
+            <div class="section-title">Pollutant Breakdown (µg/m³)</div>
+            <div style="display:flex; justify-content: space-between; text-align:center; padding: 10px 0;">
+                <div>
+                    <div style="font-size:1.3rem; font-weight:800; color:var(--dark);" id="val-pm25">--</div>
+                    <div style="font-size:0.8rem; color:var(--gray); font-weight:600;">PM2.5</div>
+                </div>
+                <div>
+                    <div style="font-size:1.3rem; font-weight:800; color:var(--dark);" id="val-pm10">--</div>
+                    <div style="font-size:0.8rem; color:var(--gray); font-weight:600;">PM10</div>
+                </div>
+                <div>
+                    <div style="font-size:1.3rem; font-weight:800; color:var(--dark);" id="val-no2">--</div>
+                    <div style="font-size:0.8rem; color:var(--gray); font-weight:600;">NO2</div>
+                </div>
+            </div>
+            <div style="margin-top: 15px; padding: 10px; background: rgba(0,0,0,0.03); border-radius: 8px; font-size: 0.8rem; color: var(--gray); text-align: center; border: 1px dashed rgba(0,0,0,0.1);">
+                <strong>Transparency Note:</strong> Utilizing Open-Meteo's global grid models. Global models can under-report localized spikes compared to physical CPCB ground sensors during extreme events.
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="section-title">Context & Probable Sources</div>
+            <div class="analysis-text" id="res-sources">
+                --
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- SETTINGS MODAL -->
+<div class="modal" id="settingsModal">
+    <div class="modal-content">
+        <span class="close-modal" onclick="closeSettings()">&times;</span>
+        <h3 style="margin-top:0; color:var(--dark);">⚙️ Environment Settings</h3>
+        <p style="font-size:0.9rem; color:var(--gray); margin-bottom: 20px;">
+            Powered by Open-Meteo API (Free/Public).
+        </p>
+        <label style="font-size:0.8rem; text-transform:uppercase; letter-spacing:1px; color:var(--primary); font-weight:800; margin-bottom:10px; display:block;">Demo Scenarios</label>
+        <button class="demo-btn" onclick="forceScenario('delhi_winter')">🌫️ Delhi Winter (Smog/Severe)</button>
+        <button class="demo-btn" onclick="forceScenario('mumbai_traffic')">🚗 Mumbai Traffic (NO2/Poor)</button>
+        <button class="demo-btn" onclick="forceScenario('rajasthan_dust')">🌪️ Rajasthan Dust (PM10)</button>
+        <button class="demo-btn" onclick="forceScenario('kerala_rain')">🌧️ Kerala Monsoon (Clean/Good)</button>
+    </div>
+</div>
+
+<!-- Toast Notifications Container -->
+<div id="toast-container"></div>
+
+<script>
+    let state = {
+        city: 'Delhi',
+        date: null,
+        symptoms: [],
+        sensitivities: ['None']
+    };
+
+    document.getElementById('dateInput').max = new Date().toISOString().split("T")[0];
+    
+    // --- UI HELPERS ---
+    function openSettings() { document.getElementById('settingsModal').style.display = 'block'; }
+    function closeSettings() { document.getElementById('settingsModal').style.display = 'none'; }
+    
+    function showToast(message, type = 'default') {
+        const container = document.getElementById('toast-container');
+        const toast = document.createElement('div');
+        toast.className = `toast ${type}`;
+        toast.innerHTML = type === 'error' ? `⚠️ ${message}` : `ℹ️ ${message}`;
+        container.appendChild(toast);
+        setTimeout(() => { if(toast.parentNode) toast.parentNode.removeChild(toast); }, 3500);
+    }
+
+    // --- INTERACTIONS ---
+    function toggleChip(el, type) { 
+        if(el.dataset.val === "None") {
+            document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+            el.classList.add('active');
+        } else {
+            document.querySelector('.chip[data-val="None"]').classList.remove('active');
+            el.classList.toggle('active');
+        }
+        
+        if(document.querySelectorAll('.chip.active').length === 0) {
+            document.querySelector('.chip[data-val="None"]').classList.add('active');
+        }
+        updateState(); 
+    }
+    
+    function toggleSymptom(el) { el.classList.toggle('selected'); updateState(); }
+    
+    function updateState() {
+        state.sensitivities = Array.from(document.querySelectorAll('.chip.active')).map(e => e.dataset.val);
+        state.symptoms = Array.from(document.querySelectorAll('.symptom-btn.selected')).map(e => e.innerText.replace(/[^a-zA-Z\s]/g,'').trim());
+    }
+    
+    function goBack() { 
+        document.getElementById('results-view').style.display = 'none'; 
+        document.getElementById('input-view').style.display = 'block'; 
+        document.documentElement.style.setProperty('--glow-color', '#3b82f6');
+    }
+
+    // --- CPCB CALCULATOR ---
+    function calcAQI_India(pm25, pm10, no2) {
+        const getSubIndex = (conc, type) => {
+            if (conc < 0) return 0;
+            let bps = [];
+            if(type === 'pm25') bps = [30, 60, 90, 120, 250];
+            if(type === 'pm10') bps = [50, 100, 250, 350, 430];
+            if(type === 'no2')  bps = [40, 80, 180, 280, 400];
+
+            if (conc <= bps[0]) return conc * (50/bps[0]);
+            if (conc <= bps[1]) return 50 + (conc-bps[0]) * (50/(bps[1]-bps[0]));
+            if (conc <= bps[2]) return 100 + (conc-bps[1]) * (100/(bps[2]-bps[1]));
+            if (conc <= bps[3]) return 200 + (conc-bps[2]) * (100/(bps[3]-bps[2]));
+            if (conc <= bps[4]) return 300 + (conc-bps[3]) * (100/(bps[4]-bps[3]));
+            return 401 + (conc-bps[4]) * (100/100); 
+        };
+
+        let i_pm25 = getSubIndex(pm25, 'pm25');
+        let i_pm10 = getSubIndex(pm10, 'pm10');
+        let i_no2 = getSubIndex(no2, 'no2');
+
+        let max_aqi = Math.max(i_pm25, i_pm10, i_no2);
+        let main = 'PM2.5';
+        if(i_pm10 > i_pm25 && i_pm10 > i_no2) main = 'PM10';
+        if(i_no2 > i_pm25 && i_no2 > i_pm10) main = 'NO2';
+        
+        return { aqi: Math.round(max_aqi), main: main };
+    }
+
+    // --- MAIN API LOGIC ---
+    async function startAnalysis() {
+        state.city = document.getElementById('cityInput').value.trim();
+        const dateVal = document.getElementById('dateInput').value;
+        
+        if(!state.city) return showToast("Please enter a city name first.", "error");
+
+        document.getElementById('input-view').style.display = 'none';
+        document.getElementById('results-view').style.display = 'block';
+        updateUI_Loading();
+
+        try {
+            const geoRes = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(state.city)}&format=json&limit=1`, {
+                headers: { 'User-Agent': 'AirLink/1.0' }
+            });
+            const geoData = await geoRes.json();
+            if(!geoData.length) throw new Error("City not found");
+            const { lat, lon } = geoData[0];
+
+            let apiUrl = "";
+            let isHistorical = false;
+
+            if(dateVal) {
+                 isHistorical = true;
+                 apiUrl = `https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${lat}&longitude=${lon}&hourly=pm10,pm2_5,nitrogen_dioxide&start_date=${dateVal}&end_date=${dateVal}&timezone=auto`;
+            } else {
+                 apiUrl = `https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${lat}&longitude=${lon}&current=pm10,pm2_5,nitrogen_dioxide&hourly=pm10,pm2_5,nitrogen_dioxide&timezone=auto&forecast_days=2`;
+            }
+
+            const aqRes = await fetch(apiUrl);
+            if(!aqRes.ok) throw new Error("Open-Meteo Fetch Error");
+            const aqData = await aqRes.json();
+
+            let dataObj = { pm2_5: 0, pm10: 0, no2: 0, type: 'Live' };
+            let hourlyForecast = null;
+
+            if(isHistorical) {
+                const hourly = aqData.hourly;
+                const len = hourly.pm2_5.length;
+                if(len > 0) {
+                    const sum = (arr) => arr.reduce((a, b) => a + (b || 0), 0);
+                    dataObj.pm2_5 = sum(hourly.pm2_5) / len;
+                    dataObj.pm10 = sum(hourly.pm10) / len;
+                    dataObj.no2 = sum(hourly.nitrogen_dioxide) / len;
+                    dataObj.type = `Avg (${dateVal})`;
+                }
+            } else {
+                const curr = aqData.current;
+                dataObj.pm2_5 = curr.pm2_5;
+                dataObj.pm10 = curr.pm10;
+                dataObj.no2 = curr.nitrogen_dioxide;
+                dataObj.type = "Live";
+                hourlyForecast = aqData.hourly;
+            }
+
+            // --- SMART CALIBRATION FEATURE ---
+            const useCalibration = document.getElementById('calibrateToggle') && document.getElementById('calibrateToggle').checked;
+            if(useCalibration && (dataObj.type === "Live" || dataObj.type.includes("Avg"))) {
+                // Apply Indian urban multipliers to global satellite data
+                dataObj.pm2_5 *= 2.8; 
+                dataObj.pm10 *= 2.0;
+                dataObj.no2 *= 1.5;
+                dataObj.type += " (Calibrated)";
+                
+                if (hourlyForecast && hourlyForecast.pm2_5) {
+                    hourlyForecast.pm2_5 = hourlyForecast.pm2_5.map(v => v * 2.8);
+                    hourlyForecast.pm10 = hourlyForecast.pm10.map(v => v * 2.0);
+                    hourlyForecast.nitrogen_dioxide = hourlyForecast.nitrogen_dioxide.map(v => v * 1.5);
+                }
+            }
+
+            processData(dataObj, hourlyForecast);
+
+        } catch (e) {
+            console.log(e);
+            showToast("Connection to weather API failed. Loading Demo Mode.", "error");
+            setTimeout(() => { forceScenario('delhi_winter'); }, 2000);
+        }
+    }
+
+    // --- MOCK DATA FOR DEMO ---
+    function createMockHourlyData(baseP25, baseP10, baseNo2) {
+        let times = []; let p25 = []; let p10 = []; let no2 = [];
+        let now = new Date(); now.setMinutes(0,0,0);
+        
+        for(let i=0; i<48; i++) {
+            times.push(new Date(now.getTime() + i * 3600000).toISOString());
+            // Create a pseudo-random wave pattern for demo purposes
+            let multiplier = 1 + (Math.sin(i / 2) * 0.3) - (Math.cos(i / 4) * 0.2); 
+            p25.push(Math.max(0, baseP25 * multiplier)); 
+            p10.push(Math.max(0, baseP10 * multiplier));
+            no2.push(Math.max(0, baseNo2 * multiplier));
+        }
+        return { time: times, pm2_5: p25, pm10: p10, nitrogen_dioxide: no2 };
+    }
+
+    function forceScenario(type) {
+        closeSettings();
+        document.getElementById('input-view').style.display = 'none';
+        document.getElementById('results-view').style.display = 'block';
+        
+        let mock = { pm2_5: 10, pm10: 20, no2: 10, type: 'Demo Data' }; 
+        let hourlyMock = null;
+
+        if(type === 'delhi_winter') {
+            state.city = "Delhi"; state.symptoms = ["Coughing", "Eye Burn"];
+            mock = { pm2_5: 280, pm10: 350, no2: 80, type: 'Demo (Severe)' }; 
+            hourlyMock = createMockHourlyData(280, 350, 80);
+            showToast("Loaded: Delhi Winter Scenario");
+        } else if (type === 'mumbai_traffic') {
+            state.city = "Mumbai"; state.symptoms = ["Breathless"];
+            mock = { pm2_5: 65, pm10: 110, no2: 150, type: 'Demo (Traffic)' };
+            hourlyMock = createMockHourlyData(65, 110, 150);
+            showToast("Loaded: Mumbai Traffic Scenario");
+        } else if (type === 'rajasthan_dust') {
+            state.city = "Jaipur"; state.symptoms = ["Sneezing", "Eye Burn"];
+            mock = { pm2_5: 45, pm10: 400, no2: 20, type: 'Demo (Dust)' };
+            hourlyMock = createMockHourlyData(45, 400, 20);
+            showToast("Loaded: Rajasthan Dust Scenario");
+        } else if (type === 'kerala_rain') {
+            state.city = "Kochi"; state.symptoms = ["Headache"];
+            mock = { pm2_5: 12, pm10: 25, no2: 8, type: 'Demo (Clean)' };
+            hourlyMock = createMockHourlyData(12, 25, 8);
+            showToast("Loaded: Kerala Monsoon Scenario");
+        }
+        processData(mock, hourlyMock);
+    }
+
+    // --- PROCESSING & RENDERING ---
+    function processData(c, hourlyForecast) {
+        let p25 = c.pm2_5 > -1 ? c.pm2_5 : 0;
+        let p10 = c.pm10 > -1 ? c.pm10 : 0;
+        let n2 = c.no2 > -1 ? c.no2 : 0;
+
+        const result = calcAQI_India(p25, p10, n2);
+        const aqi = result.aqi;
+
+        document.getElementById('res-aqi').innerText = aqi;
+        document.getElementById('res-city').innerText = `${state.city} • ${c.type}`;
+        
+        let status = "";
+        let colorHex = "";
+        
+        // CPCB Breakpoints Colors applied to CSS Variable
+        if (aqi <= 50) { status = "Good"; colorHex = "#10b981"; }
+        else if (aqi <= 100) { status = "Satisfactory"; colorHex = "#84cc16"; }
+        else if (aqi <= 200) { status = "Moderate"; colorHex = "#eab308"; }
+        else if (aqi <= 300) { status = "Poor"; colorHex = "#f97316"; }
+        else if (aqi <= 400) { status = "Very Poor"; colorHex = "#ef4444"; }
+        else { status = "Severe"; colorHex = "#991b1b"; }
+        
+        document.documentElement.style.setProperty('--glow-color', colorHex);
+        document.getElementById('res-status').innerText = status;
+        document.getElementById('res-status').style.color = colorHex;
+
+        // Update Pollutant Breakdown Display
+        document.getElementById('val-pm25').innerText = p25 ? Math.round(p25) : '--';
+        document.getElementById('val-pm10').innerText = p10 ? Math.round(p10) : '--';
+        document.getElementById('val-no2').innerText = n2 ? Math.round(n2) : '--';
+
+        generateAnalysisText(aqi, c, result.main);
+        generateExerciseRecommendation(aqi, state.sensitivities);
+        calculateBestTime(hourlyForecast);
+    }
+
+    function generateAnalysisText(aqi, c, mainPollutant) {
+        const srcBox = document.getElementById('res-sources');
+        let sources = [];
+
+        // Check if values contribute to elevated AQI (> Satisfactory)
+        if (c.pm2_5 > 30) sources.push("Combustion (Vehicles/Industry)");
+        if (c.pm2_5 > 80) sources.push("Biomass/Stubble Burning (Seasonal)");
+        if (c.pm10 > 50) sources.push("Road Dust", "Construction Activity");
+        if (c.no2 > 40) sources.push("Heavy Vehicular Traffic");
+
+        // Remove duplicates if any
+        sources = [...new Set(sources)];
+        
+        let triggersHTML = sources.length > 0 
+            ? "• " + sources.join("<br>• ") 
+            : "General urban background emissions.";
+
+        srcBox.innerHTML = `
+            <div style="margin-bottom: 8px; font-size: 0.95rem;"><strong>Primary Pollutant:</strong> <span style="color:var(--glow-color); font-weight:800;">${mainPollutant}</span></div>
+            <div style="font-size: 0.95rem;"><strong>Likely Triggers:</strong><br><span style="color:var(--gray);">${triggersHTML}</span></div>
+        `;
+    }
+
+    // --- FEATURE: EXERCISE PREDICTION ---
+    function generateExerciseRecommendation(aqi, sensitivities) {
+        const box = document.getElementById('res-exercise');
+        const hasSensitivities = sensitivities.some(s => ['Asthma', 'Senior', 'Children'].includes(s));
+        
+        let title = "";
+        let desc = "";
+        let color = "";
+
+        if (aqi <= 50) {
+            title = "✅ Highly Safe";
+            desc = "Excellent conditions! 2 hours of rigorous outdoor physical exercise is completely safe for everyone.";
+            color = "var(--success)";
+        } else if (aqi <= 100) {
+            if (hasSensitivities) {
+                title = "⚠️ Use Caution";
+                desc = "Due to your profile sensitivity, consider keeping the session light or limiting it to 1 hour. Monitor for coughing or fatigue.";
+                color = "var(--poor)"; 
+            } else {
+                title = "✅ Generally Safe";
+                desc = "Good conditions. 2 hours of outdoor exercise is safe for healthy adults.";
+                color = "var(--success)";
+            }
+        } else if (aqi <= 200) {
+            if (hasSensitivities) {
+                title = "❌ Unsafe for You";
+                desc = "Due to your sensitivities, prolonged outdoor exercise is <b>not recommended</b>. Heavy breathing will increase your exposure to pollutants. Move activities indoors.";
+                color = "var(--very-poor)";
+            } else {
+                title = "⚠️ Moderate Risk";
+                desc = "Healthy adults can exercise, but 2 hours of heavy exertion may cause mild throat irritation or breathlessness. Consider reducing intensity or taking frequent breaks.";
+                color = "var(--poor)";
+            }
+        } else if (aqi <= 300) {
+            title = "❌ Unsafe";
+            desc = "Poor air quality. 2 hours of physical exertion outdoors will significantly increase toxic pollutant inhalation. Strongly consider indoor alternatives.";
+            color = "var(--very-poor)";
+        } else {
+            title = "🛑 Dangerous";
+            desc = "Hazardous conditions. Strictly avoid outdoor physical exercise to prevent immediate and severe respiratory impacts.";
+            color = "var(--severe)";
+        }
+
+        box.innerHTML = `
+            <div style="font-weight:800; font-size:1.1rem; color:${color}; margin-bottom:8px;">${title}</div>
+            <div style="font-size:0.95rem; color:var(--dark); line-height:1.6;">${desc}</div>
+        `;
+    }
+
+    // --- FEATURE: EXACT BEST TIME TO GO OUT ---
+    function calculateBestTime(hourlyForecast) {
+        const bestTimeBox = document.getElementById('res-best-time');
+        
+        if (!hourlyForecast || !hourlyForecast.time) {
+            bestTimeBox.innerHTML = "<span style='color:var(--gray); font-weight:400;'>Forecast not available for past dates. Try 'Live' check without a specific date.</span>";
+            return;
+        }
+
+        const times = hourlyForecast.time;
+        const pm25 = hourlyForecast.pm2_5;
+        const pm10 = hourlyForecast.pm10;
+        const no2 = hourlyForecast.nitrogen_dioxide;
+
+        const now = new Date();
+        let startIndex = 0;
+        
+        // Find current hour index
+        for (let i = 0; i < times.length; i++) {
+            if (new Date(times[i]) >= now) {
+                startIndex = i;
+                break;
+            }
+        }
+
+        let bestWindow = null;
+        let minAvgAqi = Infinity;
+
+        // Search next 24 hours for the best continuous 2-hour block 
+        const searchEnd = Math.min(startIndex + 24, times.length - 1); 
+        
+        for (let i = startIndex; i < searchEnd; i++) {
+            const h1Date = new Date(times[i]);
+            const hour = h1Date.getHours();
+
+            // Restrict window to daylight/evening hours (5 AM to 8 PM Start Time)
+            if (hour < 5 || hour > 20) continue;
+
+            const p25_avg = ((pm25[i] || 0) + (pm25[i+1] || 0)) / 2;
+            const p10_avg = ((pm10[i] || 0) + (pm10[i+1] || 0)) / 2;
+            const n2_avg = ((no2[i] || 0) + (no2[i+1] || 0)) / 2;
+
+            const windowAqi = calcAQI_India(p25_avg, p10_avg, n2_avg).aqi;
+
+            if (windowAqi < minAvgAqi) {
+                minAvgAqi = windowAqi;
+                
+                const formatTime = (d) => { return d.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}); };
+                
+                const endDate = new Date(h1Date);
+                endDate.setHours(endDate.getHours() + 2);
+
+                bestWindow = {
+                    start: formatTime(h1Date),
+                    end: formatTime(endDate),
+                    day: h1Date.getDate() === now.getDate() ? "Today" : "Tomorrow",
+                    aqi: windowAqi
+                };
+            }
+        }
+
+        if (bestWindow) {
+            let color = bestWindow.aqi <= 100 ? "var(--success)" : (bestWindow.aqi <= 200 ? "var(--poor)" : "var(--very-poor)");
+            
+            let extraWarning = "";
+            if (bestWindow.aqi > 200) {
+                extraWarning = `<div style="margin-top: 10px; font-size: 0.85rem; color: var(--severe); background: rgba(239, 68, 68, 0.1); padding: 10px; border-radius: 8px; border: 1px solid rgba(239, 68, 68, 0.3);"><strong>⚠️ Caution:</strong> Even the "best" time today is highly polluted. It is strongly recommended to stay indoors.</div>`;
+            }
+
+            bestTimeBox.innerHTML = `
+                <div style="font-size: 1.2rem; font-weight: 800; margin-bottom: 8px; color: ${color};">
+                    🕒 ${bestWindow.day}, ${bestWindow.start} - ${bestWindow.end}
+                </div>
+                <div style="color:var(--dark);">Expected AQI during this window: <span style="font-weight:800; color:${color}">${bestWindow.aqi}</span></div>
+                <div style="font-size:0.8rem; color:var(--gray); margin-top:5px; font-weight:400;">(Filtered for daylight hours: 5AM - 9PM)</div>
+                ${extraWarning}
+            `;
+        } else {
+            bestTimeBox.innerHTML = "Could not calculate a suitable daytime window in the next 24 hours.";
+        }
+    }
+
+    function updateUI_Loading() {
+        document.documentElement.style.setProperty('--glow-color', '#cbd5e1'); // gray glow
+        document.getElementById('res-status').innerText = "Loading...";
+        document.getElementById('res-status').style.color = 'var(--gray)';
+        document.getElementById('res-aqi').innerText = "--";
+        document.getElementById('res-best-time').innerText = "Fetching forecast...";
+    }
+
+</script>
+</body>
+</html>
